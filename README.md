@@ -143,6 +143,20 @@ view width, except on small devices where it will be the whole width:
 
     @Html.Picz("/image/example.png", "(min-width: 36em) 33.3vw, 100vw", new { alt = "Responsive Image" })
 
+## Overriding Default Route
+
+Picz uses the following route by default:
+
+    /picz?s=320&p=/image/example.png
+
+You can change this route with the following configuration in your `appSettings`:
+
+    <add key="PiczRoute" value="imgz" />
+
+Make sure you have set the route in your MVC application to match, i.e.
+
+    [Route("imgz")]
+
 ## Overriding Default Sizes
 
 Picz uses the following sizes by default:

@@ -8,6 +8,7 @@ namespace System.Web.Mvc.Html
     {
         public static PiczOptions DefaultOptions = new PiczOptions
         {
+            Route = "picz",
             Sizes = new List<int> { 4000, 2500, 1024, 640, 320 }
         };
 
@@ -34,7 +35,7 @@ namespace System.Web.Mvc.Html
 
             var builder = new TagBuilder("img");
             builder.MergeAttributes(attributes);
-            builder.Attributes.Add("src", $"/picz?s={options.Sizes.Min()}&p={url}");
+            builder.Attributes.Add("src", $"/{options.Route}?s={options.Sizes.Min()}&p={url}");
             builder.Attributes.Add("srcset", string.Join(", ", sourceSets));
             builder.Attributes.Add("sizes", sizes);
             return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
@@ -46,7 +47,7 @@ namespace System.Web.Mvc.Html
 
             foreach (var size in options.Sizes)
             {
-                sourceSets.Add($"/picz?s={size}&p={url} {size}w");
+                sourceSets.Add($"/{options.Route}?s={size}&p={url} {size}w");
             }
 
             return sourceSets;
@@ -54,18 +55,25 @@ namespace System.Web.Mvc.Html
 
         private static PiczOptions GetPiczOptions()
         {
+            var options = new PiczOptions
+            {
+                Route = DefaultOptions.Route,
+                Sizes = DefaultOptions.Sizes
+            };
+
+            var configRoute = ConfigurationManager.AppSettings["PiczRoute"];
+            if (!string.IsNullOrWhiteSpace(configRoute))
+            {
+                options.Route = configRoute;
+            }
+
             var configSizes = ConfigurationManager.AppSettings["PiczSized"];
             if (!string.IsNullOrWhiteSpace(configSizes))
             {
-                var configOptions = new PiczOptions
-                {
-                    Sizes = configSizes.Split(',').Select(s => int.Parse(s)).ToList()
-                };
-
-                return configOptions;
+                options.Sizes = configSizes.Split(',').Select(s => int.Parse(s)).ToList();
             }
 
-            return DefaultOptions;
+            return options;
 
         }
 
@@ -73,6 +81,8 @@ namespace System.Web.Mvc.Html
 
     public class PiczOptions
     {
+        public string Route { get; set; }
+
         public IList<int> Sizes { get; set; }
     }
 }
