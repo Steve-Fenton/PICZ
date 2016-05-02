@@ -2,6 +2,7 @@
 using ImageProcessor.Imaging.Formats;
 using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;

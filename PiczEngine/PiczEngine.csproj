@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DiskInformation.cs" />
     <Compile Include="ImageResizer.cs" />
     <Compile Include="PiczHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
