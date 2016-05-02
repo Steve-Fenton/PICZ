@@ -8,7 +8,7 @@ namespace System.Web.Mvc.Html
     {
         public static PiczOptions DefaultOptions = new PiczOptions
         {
-            Sizes = new List<int> { 2500, 1024, 640, 320 }
+            Sizes = new List<int> { 4000, 2500, 1024, 640, 320 }
         };
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace System.Web.Mvc.Html
             builder.Attributes.Add("src", $"/picz?s={options.Sizes.Min()}&p={url}");
             builder.Attributes.Add("srcset", string.Join(", ", sourceSets));
             builder.Attributes.Add("sizes", sizes);
-            return MvcHtmlString.Create(builder.ToString());
+            return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
         }
 
         private static IList<string> GetSourceSets(string url, PiczOptions options)
