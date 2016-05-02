@@ -3,3 +3,10 @@
 ################################################################################
 
 /.vs/PiczEngine/v14/.suo
+/PiczEngine/.vs/PiczEngine/v14/.suo
+/PiczEngine/obj/Debug
+/.vs/config
+/packages
+/Picz/bin
+/Picz/obj/Debug
+/PiczEngine/bin/Debug
