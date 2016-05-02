@@ -8,7 +8,7 @@ namespace Picz.Controllers
     {
         private readonly ImageResizer _imageResizer = new ImageResizer();
 
-        [Route("Picz")]
+        [Route("picz")]
         public ActionResult Picz(int s, string p)
         {
             var originalUrl = new Uri(Request.Url, p).AbsoluteUri;
