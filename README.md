@@ -28,6 +28,8 @@ issues.
 
 ## Introduction
 
+### Replacement for img Tags
+
 You can use Picz wherever you place an image tag.
     
 The `img` tag below can be replaced by a call to the Picz HTML helper.
@@ -55,6 +57,35 @@ The third argument allows you to set additional HTML attributes, it is recommend
 set the alt tag as a minimum.
 
     new { alt = "Mountain Reflection" }
+
+### Replacement for background-image
+
+You can use Picz on background images too.
+
+The element before Picz was:
+
+    <div id="picz-001" style="background-image: url(/Content/landscape-mountains-nature-lake.jpeg); background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
+        &nbsp;
+    </div>
+
+Picz is introuduced using the below code:
+
+    @Html.PiczBackground("/Content/landscape-mountains-nature-lake.jpeg", "picz-001")
+    <div id="picz-001" style="background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
+        &nbsp;
+    </div>
+
+Explanation:
+    
+The PiczBackground call is placed before the element in question, allowing you to keep full control of the element.
+    
+The first argument is simply the URL that you had in the style attribute already:
+
+    /Content/landscape-mountains-nature-lake.jpeg
+
+The second argument is the HTML id attribute of the element to target. This must be unique within the document.
+
+    "picz-001"
 
 ## Quick Start
 

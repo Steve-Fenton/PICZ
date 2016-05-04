@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Fenton.Picz.Engine;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Text;
 
 namespace System.Web.Mvc.Html
 {
@@ -25,13 +27,30 @@ namespace System.Web.Mvc.Html
             return Picz(helper, url, sizes, GetPiczOptions(), htmlAttributes);
         }
 
+        /// <summary>
+        /// Generates an image with responsive source sets
+        /// </summary>
+        /// <param name="helper"></param>
+        /// <param name="url">The URL of the image</param>
+        /// <param name="id">The id of the image to target</param>
+        /// <returns></returns>
+        public static MvcHtmlString PiczBackground(this HtmlHelper helper, string url, string id)
+        {
+            return PiczBackground(helper, url, id, GetPiczOptions());
+        }
+
         public static MvcHtmlString Picz(this HtmlHelper helper, string url, string sizes, PiczOptions options, object htmlAttributes)
         {
             url = url.TrimStart(new char[] { '~' });
 
             var attributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
 
-            IList<string> sourceSets = GetSourceSets(url, options);
+            var sourceSets = new List<string>();
+
+            foreach (var size in options.Sizes)
+            {
+                sourceSets.Add($"/{options.Route}?s={size}&p={url} {size}w");
+            }
 
             var builder = new TagBuilder("img");
             builder.MergeAttributes(attributes);
@@ -41,16 +60,30 @@ namespace System.Web.Mvc.Html
             return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
         }
 
-        private static IList<string> GetSourceSets(string url, PiczOptions options)
+        public static MvcHtmlString PiczBackground(this HtmlHelper helper, string url, string id, PiczOptions options)
         {
-            var sourceSets = new List<string>();
+            url = url.TrimStart(new char[] { '~' });
 
-            foreach (var size in options.Sizes)
+            var builder = new StringBuilder();
+            builder.AppendLine("<style scoped>");
+
+            bool isDefaultSet = false;
+
+            foreach (var size in options.Sizes.OrderByDescending(s => s))
             {
-                sourceSets.Add($"/{options.Route}?s={size}&p={url} {size}w");
+                var img = $"/{options.Route}?s={size}&p={url}";
+
+                if (!isDefaultSet)
+                {
+                    builder.AppendLine($"#{id} {{ background-image: url(\"{img}\") }}");
+                    isDefaultSet = true;
+                }
+
+                builder.AppendLine($"@media only screen and (max-width: {size}px) {{ #{id} {{ background-image: url(\"{img}\") }} }} ");
             }
 
-            return sourceSets;
+            builder.AppendLine("</style>");
+            return MvcHtmlString.Create(builder.ToString());
         }
 
         private static PiczOptions GetPiczOptions()
@@ -74,15 +107,6 @@ namespace System.Web.Mvc.Html
             }
 
             return options;
-
         }
-
-    }
-
-    public class PiczOptions
-    {
-        public string Route { get; set; }
-
-        public IList<int> Sizes { get; set; }
     }
 }
