@@ -26,6 +26,11 @@ issues.
 
  - Your website should appear to be faster, not slower, to the end user.
 
+## Acknowledgements
+
+new-york.jpg used in the examples, by [Terabass](https://en.wikipedia.org/wiki/Times_Square#/media/File:New_york_times_square-terabass.jpg)
+london.jpg used in the examples, by [Daniel Chapma](https://en.wikipedia.org/wiki/List_of_tallest_buildings_and_structures_in_London#/media/File:London_from_a_hot_air_balloon.jpg)
+
 ## Introduction
 
 ### Replacement for img Tags

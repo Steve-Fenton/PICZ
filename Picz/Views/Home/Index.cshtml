@@ -7,19 +7,19 @@
     
     The element before Picz was:
 
-        <img src="~/Content/landscape-mountains-nature-lake.jpeg" alt="Mountain Reflection" />
+        <img src="~/Content/new-york.jpg" alt="New York" />
 
     Picz is introuduced using the below code:
 -->
 
-@Html.Picz("~/Content/landscape-mountains-nature-lake.jpeg", "100vw", new { alt = "Mountain Reflection" })
+@Html.Picz("~/Content/new-york.jpg", "100vw", new { alt = "New York" })
 
 <!--
     Explanation:
 
     The first argument is simply the URL that you had in the src attribute already:
 
-        "~/Content/landscape-mountains-nature-lake.jpeg"
+        "~/Content/new-york.jpg"
     
     The second argument indicates to browsers what portion of the view the image will take up,
     this allows the browser to choose the best image (i.e. if you will take up 50vw, and the view is
@@ -30,7 +30,7 @@
     The third argument allows you to set additional HTML attributes, it is recommended that you
     set the alt tag as a minimum.
 
-        new { alt = "Mountain Reflection" }
+        new { alt = "New York" }
 -->
 
 <!--
@@ -38,14 +38,14 @@
 
     The element before Picz was:
 
-    <div id="picz-001" style="background-image: url(/Content/landscape-mountains-nature-lake.jpeg); background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
+    <div id="picz-001" style="background-image: url(/Content/london.jpg); background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
         &nbsp;
     </div>
 
     Picz is introuduced using the below code:
 -->
 
-@Html.PiczBackground("/Content/landscape-mountains-nature-lake.jpeg", "picz-001")
+@Html.PiczBackground("/Content/london.jpg", "picz-001")
 <div id="picz-001" style="background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
     &nbsp;
 </div>
@@ -57,7 +57,7 @@
     
     The first argument is simply the URL that you had in the style attribute already:
 
-        /Content/landscape-mountains-nature-lake.jpeg
+        /Content/london.jpg
 
     The second argument is the HTML id attribute of the element to target. This must be unique within the document.
 

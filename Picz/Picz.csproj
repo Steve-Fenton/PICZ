@@ -154,8 +154,8 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\landscape-mountains-nature-lake.jpeg" />
-    <Content Include="Content\landscape-mountains-nature-lake.png" />
+    <Content Include="Content\london.jpg" />
+    <Content Include="Content\new-york.jpg" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />

@@ -2,7 +2,6 @@
 using ImageProcessor.Imaging.Formats;
 using System;
 using System.Configuration;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
@@ -47,7 +46,7 @@ namespace Fenton.Picz.Engine
             var replacementImage = new ReplacementImage
             {
                 Path = fullPath,
-                MimeType = MimeMapping.GetMimeMapping(fullPath)
+                MimeType = "image/jpeg"
             };
 
             return replacementImage;
