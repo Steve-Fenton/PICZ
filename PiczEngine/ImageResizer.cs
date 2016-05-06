@@ -99,6 +99,8 @@ namespace Fenton.Picz.Engine
                     }
                 }
 
+                inStream.Position = 0;
+
                 ISupportedImageFormat format = new JpegFormat { Quality = 90 };
                 var size = new Size(width, 0);
 
