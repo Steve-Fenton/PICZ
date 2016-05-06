@@ -97,7 +97,7 @@ The second argument is the HTML id attribute of the element to target. This must
 
 Grab the engine from NuGet:
 
-    PM> Install-Package Fenton.Picz.Engine
+    PM> Install-Package Fenton.Picz
 
 Add the following configuration (example shows 48 hour caching, in a directory on the E drive).
 

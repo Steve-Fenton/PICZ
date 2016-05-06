@@ -1,0 +1,30 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Fenton.Picz</id>
+    <version>0.1.6</version>
+    <title>Fenton.Picz</title>
+    <authors>Steve Fenton</authors>
+    <owners>Steve Fenton</owners>
+    <description>
+      Responsive Images for ASP.NET MVC Applications.
+
+      Works with static images, or images served via a controller (for example, via a database).
+    </description>
+    <releaseNotes>
+    </releaseNotes>
+    <summary>
+      Responsive Images for ASP.NET MVC Applications.
+    </summary>
+    <language>en-US</language>
+    <projectUrl>https://github.com/Steve-Fenton/Picz</projectUrl>
+    <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+    <copyright>Copyright Steve Fenton 2016</copyright>
+    <dependencies>
+    </dependencies>
+    <references></references>
+    <tags>asp.net mvc,responsive,images,resize</tags>
+  </metadata>
+</package>
