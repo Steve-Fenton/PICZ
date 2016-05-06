@@ -1,11 +1,10 @@
 ﻿using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
 using System;
-using System.Configuration;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
-using System.Web;
 
 namespace Fenton.Picz.Engine
 {
@@ -14,17 +13,18 @@ namespace Fenton.Picz.Engine
         public ReplacementImage GetReplacementImage(int size, string originalUrl)
         {
             // Configuration values
-            var cacheDurationHours = int.Parse(ConfigurationManager.AppSettings["PiczCacheDurationHours"]);
-            var cacheRootPath = ConfigurationManager.AppSettings["PiczCachePath"];
+            var options = PiczOptions.Load();
+
+            size = ConstrainSize(size, options);
 
             // Create a cache folder that includes the image size
-            var cacheFolderPath = Path.Combine(cacheRootPath, size.ToString());
+            var cacheFolderPath = Path.Combine(options.CacheRootPath, size.ToString());
 
             ReplacementImage replacementImage = GetSafeNamedImage(originalUrl, cacheFolderPath);
 
             FileInfo fileInfo = new FileInfo(replacementImage.Path);
             if (fileInfo.Exists
-                && (fileInfo.LastWriteTimeUtc.AddHours(cacheDurationHours) > DateTime.UtcNow))
+                && (fileInfo.LastWriteTimeUtc.AddHours(options.CacheDurationHours) > DateTime.UtcNow))
             {
                 return replacementImage;
             }
@@ -34,6 +34,20 @@ namespace Fenton.Picz.Engine
             Resize(originalUrl, replacementImage.Path, size);
 
             return replacementImage;
+        }
+
+        private static int ConstrainSize(int size, PiczOptions options)
+        {
+            // Important!
+            // This prevents random sizes being requested, which would take up infinitely more
+            // disk space than predicted - this method constrains the size to one of the configured
+            // values.
+            if (!options.Sizes.Contains(size))
+            {
+                size = options.Sizes.OrderBy(item => Math.Abs(size - item)).First();
+            }
+
+            return size;
         }
 
         private static ReplacementImage GetSafeNamedImage(string originalUrl, string cacheFolderPath)

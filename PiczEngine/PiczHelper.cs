@@ -8,12 +8,6 @@ namespace System.Web.Mvc.Html
 {
     public static class PiczHelper
     {
-        public static PiczOptions DefaultOptions = new PiczOptions
-        {
-            Route = "picz",
-            Sizes = new List<int> { 4000, 2500, 1024, 640, 320 }
-        };
-
         /// <summary>
         /// Generates an image with responsive source sets
         /// </summary>
@@ -24,7 +18,7 @@ namespace System.Web.Mvc.Html
         /// <returns></returns>
         public static MvcHtmlString Picz(this HtmlHelper helper, string url, string sizes, object htmlAttributes)
         {
-            return Picz(helper, url, sizes, GetPiczOptions(), htmlAttributes);
+            return Picz(helper, url, sizes, PiczOptions.Load(), htmlAttributes);
         }
 
         /// <summary>
@@ -36,7 +30,7 @@ namespace System.Web.Mvc.Html
         /// <returns></returns>
         public static MvcHtmlString PiczBackground(this HtmlHelper helper, string url, string id)
         {
-            return PiczBackground(helper, url, id, GetPiczOptions());
+            return PiczBackground(helper, url, id, PiczOptions.Load());
         }
 
         public static MvcHtmlString Picz(this HtmlHelper helper, string url, string sizes, PiczOptions options, object htmlAttributes)
@@ -84,29 +78,6 @@ namespace System.Web.Mvc.Html
 
             builder.AppendLine("</style>");
             return MvcHtmlString.Create(builder.ToString());
-        }
-
-        private static PiczOptions GetPiczOptions()
-        {
-            var options = new PiczOptions
-            {
-                Route = DefaultOptions.Route,
-                Sizes = DefaultOptions.Sizes
-            };
-
-            var configRoute = ConfigurationManager.AppSettings["PiczRoute"];
-            if (!string.IsNullOrWhiteSpace(configRoute))
-            {
-                options.Route = configRoute;
-            }
-
-            var configSizes = ConfigurationManager.AppSettings["PiczSized"];
-            if (!string.IsNullOrWhiteSpace(configSizes))
-            {
-                options.Sizes = configSizes.Split(',').Select(s => int.Parse(s)).ToList();
-            }
-
-            return options;
         }
     }
 }
