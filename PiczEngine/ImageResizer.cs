@@ -86,13 +86,22 @@ namespace Fenton.Picz.Engine
 
         private void Resize(int width, string resizedPath, byte[] photoBytes)
         {
-            ISupportedImageFormat format = new JpegFormat { Quality = 90 };
-            Size size = new Size(width, 0);
-
             using (var inStream = new MemoryStream(photoBytes))
             using (var fileStream = new FileStream(resizedPath, FileMode.Create, FileAccess.Write))
             using (var imageFactory = new ImageFactory())
             {
+                // No upscaling! No point creating images larger than the original
+                using (var image = Image.FromStream(inStream))
+                {
+                    if (image.Width < width)
+                    {
+                        width = image.Width;
+                    }
+                }
+
+                ISupportedImageFormat format = new JpegFormat { Quality = 90 };
+                var size = new Size(width, 0);
+
                 // Load, resize, set the format and quality and save an image.
                 imageFactory
                     .Load(inStream)
