@@ -30,6 +30,7 @@ issues.
 
 new-york.jpg used in the examples, by [Terabass](https://en.wikipedia.org/wiki/Times_Square#/media/File:New_york_times_square-terabass.jpg)
 london.jpg used in the examples, by [Daniel Chapma](https://en.wikipedia.org/wiki/List_of_tallest_buildings_and_structures_in_London#/media/File:London_from_a_hot_air_balloon.jpg)
+paris.jpg used in the examples, by [Simon Reinhardt](https://commons.wikimedia.org/wiki/File:Paris_at_night,_4_July_2013.jpg)
 
 ## Introduction
 

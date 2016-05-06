@@ -10,7 +10,7 @@ namespace Fenton.Picz.Engine
 {
     public class ImageResizer
     {
-        public ReplacementImage GetReplacementImage(int size, string originalUrl)
+        public ReplacementImage GetReplacementImage(int size, string originalUrl, Func<byte[]> getImage = null)
         {
             // Configuration values
             var options = PiczOptions.Load();
@@ -23,15 +23,22 @@ namespace Fenton.Picz.Engine
             ReplacementImage replacementImage = GetSafeNamedImage(originalUrl, cacheFolderPath);
 
             FileInfo fileInfo = new FileInfo(replacementImage.Path);
-            if (fileInfo.Exists
-                && (fileInfo.LastWriteTimeUtc.AddHours(options.CacheDurationHours) > DateTime.UtcNow))
+            if (fileInfo.Exists && (fileInfo.LastWriteTimeUtc.AddHours(options.CacheDurationHours) > DateTime.UtcNow))
             {
                 return replacementImage;
             }
 
             // Create image
             Directory.CreateDirectory(cacheFolderPath);
-            Resize(originalUrl, replacementImage.Path, size);
+
+            if (getImage == null)
+            {
+                Resize(size, replacementImage.Path, originalUrl);
+            }
+            else
+            {
+                Resize(size, replacementImage.Path, getImage());
+            }
 
             return replacementImage;
         }
@@ -66,7 +73,7 @@ namespace Fenton.Picz.Engine
             return replacementImage;
         }
 
-        private void Resize(string originalPath, string resizedPath, int width)
+        private void Resize(int width, string resizedPath, string originalPath)
         {
             byte[] photoBytes;
             using (var webClient = new WebClient())
@@ -74,7 +81,11 @@ namespace Fenton.Picz.Engine
                 photoBytes = webClient.DownloadData(originalPath);
             }
 
-            // Format is automatically detected though can be changed.
+            Resize(width, resizedPath, photoBytes);
+        }
+
+        private void Resize(int width, string resizedPath, byte[] photoBytes)
+        {
             ISupportedImageFormat format = new JpegFormat { Quality = 90 };
             Size size = new Size(width, 0);
 

@@ -1,65 +1,81 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-}
+﻿<ul>
+    <li><a href="#imagetags">Image Tags</a></li>
+    <li><a href="#backgroundimages">Background Images</a></li>
+    <li><a href="#controllerimages">Controller Images</a></li>
+</ul>
 
-<!--
-    You can use Picz wherever you place an image tag.
-    
-    The element before Picz was:
+<h2 id="imagetags">Image Tags</h2>
+<p>You can use Picz wherever you place an image tag.</p>
+<p>The element before Picz was:</p>
+<pre><code>&lt;img src="~/Content/new-york.jpg" alt="New York" /></code></pre>
+<p>Picz is introuduced using the below code:</p>
+<pre><code>&#x40;Html.Picz("~/Content/new-york.jpg", "100vw", new { alt = "New York" })</code></pre>
 
-        <img src="~/Content/new-york.jpg" alt="New York" />
-
-    Picz is introuduced using the below code:
--->
-
+<h3>Example:</h3>
 @Html.Picz("~/Content/new-york.jpg", "100vw", new { alt = "New York" })
 
-<!--
-    Explanation:
+<h2 id="backgroundimages">Background Images</h2>
 
-    The first argument is simply the URL that you had in the src attribute already:
+<p>You can use Picz on background images too.</p>
+<p>The element before Picz was:</p>
+<pre><code>
+&lt;div id="picz-001" style="background-image: url(/Content/london.jpg); background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
+    &amp;nbsp;
+&lt;/div>
+</code></pre>
+<p>Picz is introuduced using the below code:</p>
+<pre><code>
+&#x40;Html.PiczBackground("/Content/london.jpg", "picz-001")
 
-        "~/Content/new-york.jpg"
-    
-    The second argument indicates to browsers what portion of the view the image will take up,
-    this allows the browser to choose the best image (i.e. if you will take up 50vw, and the view is
-    600px, it may choose a 300px image size).
+&lt;div id="picz-001" style="background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
+    &amp;nbsp;
+&lt;/div>
+</code></pre>
 
-        "100vw"
-
-    The third argument allows you to set additional HTML attributes, it is recommended that you
-    set the alt tag as a minimum.
-
-        new { alt = "New York" }
--->
-
-<!--
-    You can use Picz on background images too.
-
-    The element before Picz was:
-
-    <div id="picz-001" style="background-image: url(/Content/london.jpg); background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
-        &nbsp;
-    </div>
-
-    Picz is introuduced using the below code:
--->
-
+<h3>Example:</h3>
 @Html.PiczBackground("/Content/london.jpg", "picz-001")
 <div id="picz-001" style="background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
     &nbsp;
 </div>
 
-<!--
-    Explanation:
-    
-    The PiczBackground call is placed before the element in question, allowing you to keep full control of the element.
-    
-    The first argument is simply the URL that you had in the style attribute already:
+<h2 id="controllerimages">Controller Images</h2>
+<p>If you have a controller that serves images, you can avoid making the network round-trip for the image by supporting resizing in your controller.</p>
+<p>This is the code before Picz is introduced:</p>
+<pre><code>&lt;img src="&#x40;Url.Action("Index", "Image", new { })" alt="Paris" /></code></pre>
+<p>And this is the version using the PiczAppend method:</p>
+<pre><code>&#x40;Html.PiczAppend(Url.Action("Index", "Image", new { }), "100vw", new { alt = "Paris" })</code></pre>
+<p>And this is the controller before Picz is introduced (it could get the image from a database, for example):</p>
+<pre><code>public class ImageController : Controller
+{
+    public ActionResult Index()
+    {
+        return File(Server.MapPath(Url.Content("~/Content/paris.jpg")), "image/jpeg");
+    }
+}</code></pre>
+<p>Your controller will be passed a "size" argument, and can use the Image Resizer to do the work:</p>
+<pre><code>public class ImageController : Controller
+{
+    private readonly ImageResizer _imageResizer = new ImageResizer();
+    private int _defaultSize = 640;
+    public ActionResult Index(int? s)
+    {
+        if (!s.HasValue)
+        {
+            s = _defaultSize;
+        }
+        var replacementImage = _imageResizer.GetReplacementImage(
+            s.Value,
+            Request.Url.AbsoluteUri + ".jpg",
+            () => System.IO.File.ReadAllBytes(Server.MapPath(Url.Content("~/Content/paris.jpg"))));
+        return File(replacementImage.Path, replacementImage.MimeType);
+    }
+}</code></pre>
 
-        /Content/london.jpg
+<h3>Example (img)</h3>
+@Html.PiczAppend(Url.Action("Index", "Image", new { }), "100vw", new { alt = "Paris" })
 
-    The second argument is the HTML id attribute of the element to target. This must be unique within the document.
-
-        "picz-001"
--->
+<h3>Example (background)</h3>
+@Html.PiczBackgroundAppend(Url.Action("Index", "Image", new { }), "picz-002")
+<div id="picz-002" style="background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
+    &nbsp;
+</div>
