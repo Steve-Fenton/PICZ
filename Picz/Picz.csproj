@@ -155,7 +155,9 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\london.gif" />
     <Content Include="Content\london.jpg" />
+    <Content Include="Content\london.png" />
     <Content Include="Content\new-york.jpg" />
     <Content Include="Content\paris.jpg" />
     <Content Include="favicon.ico" />

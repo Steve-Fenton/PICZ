@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Web;
 
 namespace Fenton.Picz.Engine
 {
@@ -20,12 +21,12 @@ namespace Fenton.Picz.Engine
             // Create a cache folder that includes the image size
             var cacheFolderPath = Path.Combine(options.CacheRootPath, size.ToString());
 
-            ReplacementImage replacementImage = GetSafeNamedImage(originalUrl, cacheFolderPath);
+            ReplacementImage replacement = GetSafeNamedImage(originalUrl, cacheFolderPath);
 
-            FileInfo fileInfo = new FileInfo(replacementImage.Path);
+            FileInfo fileInfo = new FileInfo(replacement.Path);
             if (fileInfo.Exists && (fileInfo.LastWriteTimeUtc.AddHours(options.CacheDurationHours) > DateTime.UtcNow))
             {
-                return replacementImage;
+                return replacement;
             }
 
             // Create image
@@ -33,14 +34,14 @@ namespace Fenton.Picz.Engine
 
             if (getImage == null)
             {
-                Resize(size, replacementImage.Path, originalUrl);
+                Resize(size, replacement, originalUrl);
             }
             else
             {
-                Resize(size, replacementImage.Path, getImage());
+                Resize(size, replacement, getImage());
             }
 
-            return replacementImage;
+            return replacement;
         }
 
         private static int ConstrainSize(int size, PiczOptions options)
@@ -67,13 +68,13 @@ namespace Fenton.Picz.Engine
             var replacementImage = new ReplacementImage
             {
                 Path = fullPath,
-                MimeType = "image/jpeg"
+                MimeType = MimeMapping.GetMimeMapping(originalUrl)
             };
 
             return replacementImage;
         }
 
-        private void Resize(int width, string resizedPath, string originalPath)
+        private void Resize(int width, ReplacementImage replacement, string originalPath)
         {
             byte[] photoBytes;
             using (var webClient = new WebClient())
@@ -81,13 +82,13 @@ namespace Fenton.Picz.Engine
                 photoBytes = webClient.DownloadData(originalPath);
             }
 
-            Resize(width, resizedPath, photoBytes);
+            Resize(width, replacement, photoBytes);
         }
 
-        private void Resize(int width, string resizedPath, byte[] photoBytes)
+        private void Resize(int width, ReplacementImage replacement, byte[] photoBytes)
         {
             using (var inStream = new MemoryStream(photoBytes))
-            using (var fileStream = new FileStream(resizedPath, FileMode.Create, FileAccess.Write))
+            using (var fileStream = new FileStream(replacement.Path, FileMode.Create, FileAccess.Write))
             using (var imageFactory = new ImageFactory())
             {
                 // No upscaling! No point creating images larger than the original
@@ -101,15 +102,27 @@ namespace Fenton.Picz.Engine
 
                 inStream.Position = 0;
 
-                ISupportedImageFormat format = new JpegFormat { Quality = 90 };
                 var size = new Size(width, 0);
 
                 // Load, resize, set the format and quality and save an image.
                 imageFactory
                     .Load(inStream)
                     .Resize(size)
-                    .Format(format)
+                    .Format(GetFormat(replacement))
                     .Save(fileStream);
+            }
+        }
+
+        private static ISupportedImageFormat GetFormat(ReplacementImage replacement)
+        {
+            switch (replacement.MimeType)
+            {
+                case "image/png":
+                    return new PngFormat { Quality = 90 };
+                case "image/gif":
+                    return new GifFormat { Quality = 90 };
+                default:
+                    return new JpegFormat { Quality = 90 };
             }
         }
     }
