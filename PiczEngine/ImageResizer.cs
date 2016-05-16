@@ -23,7 +23,7 @@ namespace Fenton.Picz.Engine
 
             ReplacementImage replacement = GetSafeNamedImage(originalUrl, cacheFolderPath);
 
-            FileInfo fileInfo = new FileInfo(replacement.Path);
+            var fileInfo = new FileInfo(replacement.Path);
             if (fileInfo.Exists && (fileInfo.LastWriteTimeUtc.AddHours(options.CacheDurationHours) > DateTime.UtcNow))
             {
                 return replacement;

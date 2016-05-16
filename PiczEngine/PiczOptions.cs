@@ -28,7 +28,7 @@ namespace Fenton.Picz.Engine
                 options.Route = configRoute;
             }
 
-            var configSizes = ConfigurationManager.AppSettings["PiczSized"];
+            var configSizes = ConfigurationManager.AppSettings["PiczSizes"];
             if (!string.IsNullOrWhiteSpace(configSizes))
             {
                 options.Sizes = configSizes.Split(',').Select(s => int.Parse(s)).ToList();
