@@ -2,6 +2,7 @@
 using Owin;
 
 [assembly: OwinStartup(typeof(Picz.Startup))]
+
 namespace Picz
 {
     public partial class Startup

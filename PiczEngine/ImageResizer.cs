@@ -119,8 +119,10 @@ namespace Fenton.Picz.Engine
             {
                 case "image/png":
                     return new PngFormat { Quality = 90 };
+
                 case "image/gif":
                     return new GifFormat { Quality = 90 };
+
                 default:
                     return new JpegFormat { Quality = 90 };
             }

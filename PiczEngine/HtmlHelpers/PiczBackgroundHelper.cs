@@ -35,6 +35,7 @@ namespace System.Web.Mvc.Html
             foreach (var size in options.Sizes.OrderByDescending(s => s))
             {
                 var img = $"/{options.Route}?s={size}&p={url}";
+                decimal breakpoint = GetBreakpoint(options, size);
 
                 if (!isDefaultSet)
                 {
@@ -42,7 +43,7 @@ namespace System.Web.Mvc.Html
                     isDefaultSet = true;
                 }
 
-                builder.AppendLine($"@media only screen and (max-width: {size}px) {{ #{id} {{ background-image: url(\"{img}\") }} }} ");
+                builder.AppendLine($"@media only screen and (max-width: {breakpoint}px) {{ #{id} {{ background-image: url(\"{img}\") }} }} ");
             }
 
             builder.AppendLine("</style>");
@@ -59,6 +60,7 @@ namespace System.Web.Mvc.Html
             foreach (var size in options.Sizes.OrderByDescending(s => s))
             {
                 var img = $"{url}?s={size}";
+                var breakpoint = GetBreakpoint(options, size);
 
                 if (!isDefaultSet)
                 {
@@ -66,11 +68,16 @@ namespace System.Web.Mvc.Html
                     isDefaultSet = true;
                 }
 
-                builder.AppendLine($"@media only screen and (max-width: {size}px) {{ #{id} {{ background-image: url(\"{img}\") }} }} ");
+                builder.AppendLine($"@media only screen and (max-width: {breakpoint}px) {{ #{id} {{ background-image: url(\"{img}\") }} }} ");
             }
 
             builder.AppendLine("</style>");
             return MvcHtmlString.Create(builder.ToString());
+        }
+
+        private static decimal GetBreakpoint(PiczOptions options, int size)
+        {
+            return Math.Round((size / 100M) * (100M - options.BackgroundAdjustmentPercent), 0);
         }
     }
 }

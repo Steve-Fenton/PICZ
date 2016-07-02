@@ -22,7 +22,7 @@ $THIS_SCRIPTS_DIRECTORY_PATH = Split-Path $script:MyInvocation.MyCommand.Path
 # Get the path to the Config file and dot source it into this script.
 # The variables below should be defined in the Config file, but if they aren't we initialize them with default values.
 $CONFIG_FILE_PATH = Join-Path -Path (Split-Path -Path $THIS_SCRIPTS_DIRECTORY_PATH -Parent) -ChildPath 'Config.ps1'
-if (Test-Path -Path $CONFIG_FILE_PATH) { . $CONFIG_FILE_PATH } 
+if (Test-Path -Path $CONFIG_FILE_PATH) { . $CONFIG_FILE_PATH }
 else { Write-Warning "Could not find Config file at '$CONFIG_FILE_PATH'. Default values will be used instead." }
 
 # The NuGet gallery to upload to. If not provided, the DefaultPushSource in your NuGet.config file is used (typically nuget.org).

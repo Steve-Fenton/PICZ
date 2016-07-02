@@ -34,7 +34,7 @@ $OutputDirectory = $OutputDirectory.TrimEnd('\')
 # Get the path to the Config file and dot source it into this script.
 # The variables below should be defined in the Config file, but if they aren't we initialize them with default values.
 $CONFIG_FILE_PATH = Join-Path -Path (Split-Path -Path $THIS_SCRIPTS_DIRECTORY_PATH -Parent) -ChildPath 'Config.ps1'
-if (Test-Path -Path $CONFIG_FILE_PATH) { . $CONFIG_FILE_PATH } 
+if (Test-Path -Path $CONFIG_FILE_PATH) { . $CONFIG_FILE_PATH }
 else { Write-Warning "Could not find Config file at '$CONFIG_FILE_PATH'. Default values will be used instead." }
 
 # Specify the version number to use for the NuGet package. If not specified, the version number of the assembly being packed will be used.
@@ -43,7 +43,7 @@ else { Write-Warning "Could not find Config file at '$CONFIG_FILE_PATH'. Default
 if (!(Test-Path Variable:Private:versionNumber) -or (Test-StringIsNullOrWhitespace $versionNumber)) { $versionNumber = ""; Write-Output "Using default Version Number value."  }
 else { Write-Output "Using user-specified Version Number value '$versionNumber'." }
 
-# Specify any release notes for this package. 
+# Specify any release notes for this package.
 # These will only be included in the package if you have a .nuspec file for the project in the same directory as the project file.
 if (!(Test-Path Variable:Private:releaseNotes) -or (Test-StringIsNullOrWhitespace $releaseNotes)) { $releaseNotes = ""; Write-Output "Using default Release Notes value."  }
 else { Write-Output "Using user-specified Release Notes value '$releaseNotes'." }
@@ -85,15 +85,15 @@ if ($BuildConfiguration -ne $configuration -or $BuildPlatform -ne $platform)
 }
 
 #-----
-# Make sure the assembly still exists in the folder specified by the project file, since if an Output Directory different than the one specified in 
+# Make sure the assembly still exists in the folder specified by the project file, since if an Output Directory different than the one specified in
 # the project file was used (e.g. passed in using msbuild.exe's outdir property parameter, NuGet.exe won't be able to find the assembly file and pack it.
 
 # Define helper functions.
 function Get-XmlNamespaceManager([xml]$XmlDocument, [string]$NamespaceURI = "")
 {
 	# If a Namespace URI was not given, use the Xml document's default namespace.
-	if ([string]::IsNullOrEmpty($NamespaceURI)) { $NamespaceURI = $XmlDocument.DocumentElement.NamespaceURI }	
-	
+	if ([string]::IsNullOrEmpty($NamespaceURI)) { $NamespaceURI = $XmlDocument.DocumentElement.NamespaceURI }
+
 	# In order for SelectSingleNode() to actually work, we need to use the fully qualified node path along with an Xml Namespace Manager, so set them up.
 	[System.Xml.XmlNamespaceManager]$xmlNsManager = New-Object System.Xml.XmlNamespaceManager($XmlDocument.NameTable)
 	$xmlNsManager.AddNamespace("ns", $NamespaceURI)
@@ -109,7 +109,7 @@ function Get-XmlNode([xml]$XmlDocument, [string]$NodePath, [string]$NamespaceURI
 {
 	$xmlNsManager = Get-XmlNamespaceManager -XmlDocument $XmlDocument -NamespaceURI $NamespaceURI
 	[string]$fullyQualifiedNodePath = Get-FullyQualifiedXmlNodePath -NodePath $NodePath -NodeSeparatorCharacter $NodeSeparatorCharacter
-	
+
 	# Try and get the node, then return it. Returns $null if the node was not found.
 	$node = $XmlDocument.SelectSingleNode($fullyQualifiedNodePath, $xmlNsManager)
 	return $node
@@ -127,9 +127,9 @@ function Get-XmlNodes([xml]$XmlDocument, [string]$NodePath, [string]$NamespaceUR
 
 function Get-XmlElementsTextValue([xml]$XmlDocument, [string]$ElementPath, [string]$NamespaceURI = "", [string]$NodeSeparatorCharacter = '.')
 {
-	# Try and get the node.	
+	# Try and get the node.
 	$node = Get-XmlNode -XmlDocument $XmlDocument -NodePath $ElementPath -NamespaceURI $NamespaceURI -NodeSeparatorCharacter $NodeSeparatorCharacter
-	
+
 	# If the node already exists, return its value, otherwise return null.
 	if ($node) { return $node.InnerText } else { return $null }
 }
@@ -144,7 +144,7 @@ function Ensure-AssemblyFileExistsWhereNuGetExpectsItToBe([string]$ProjectFilePa
 
 	# If the Project File Path does not exist, display an error message and return.
 	if (!(Test-Path $ProjectFilePath)) { Write-Output "Project file does not exist at '$ProjectFilePath', so cannot pre-process it."; return }
-	
+
 	# Get the contents of the Project File as Xml.
 	$projectFileXml = New-Object System.Xml.XmlDocument
 	$projectFileXml.Load($ProjectFilePath)
@@ -160,7 +160,7 @@ function Ensure-AssemblyFileExistsWhereNuGetExpectsItToBe([string]$ProjectFilePa
 
 	# If we were not able to get the Output Directory where NuGet.exe will expect to find the assembly from the Project File, display an error message and return.
 	if ([string]::IsNullOrEmpty($projectFileOutputDirectory)) { Write-Output "Could not find the OutputPath element in the project file that corresponds to Configuration '$Configuration' and Platform '$Platform', so cannot pre-process it."; return }
-	
+
 	# Get the full path of the directory where NuGet.exe will expect to find the assembly.
 	$nuGetExpectedOutputDirectoryPath = Join-Path (Split-Path -Path $ProjectFilePath -Parent) $projectFileOutputDirectory
 	$nuGetExpectedOutputDirectoryPath = $nuGetExpectedOutputDirectoryPath.TrimEnd('\')	# We trimmed the OutputDirectory, so trim this one too so we can compare them to see if they match.
@@ -171,11 +171,11 @@ function Ensure-AssemblyFileExistsWhereNuGetExpectsItToBe([string]$ProjectFilePa
 		# Get the name of the assembly.
 		$assemblyName = Get-XmlElementsTextValue -XmlDocument $projectFileXml -ElementPath "Project.PropertyGroup.AssemblyName"
 		if (!$assemblyName) { $assemblyName = [string]::Empty }
-		
+
 		# Get the type of project being built, so we can determine what file extension it should have.
 		$assemblyType = Get-XmlElementsTextValue -XmlDocument $projectFileXml -ElementPath "Project.PropertyGroup.OutputType"
 		if (!$assemblyType) { $assemblyType = [string]::Empty }
-		
+
 		# Attach the file extension to the assembly name based on the type of project this is. Either a Library or Executable.
 		if ($assemblyType.Equals("Library", [System.StringComparison]::OrdinalIgnoreCase)) { $assemblyName = "$assemblyName.dll" }
 		else { $assemblyName = "$assemblyName.exe" }
@@ -186,39 +186,39 @@ function Ensure-AssemblyFileExistsWhereNuGetExpectsItToBe([string]$ProjectFilePa
 
 		# If the assembly is not in the Output Directory (which it should be), display an error message and return.
 		if (!(Test-Path $assemblyPath -PathType Leaf)) { Write-Output "Could not find the assembly at the expected path '$assemblyPath', so cannot continue pre-processing."; return }
-		
+
 		# Make sure the assembly exists in the Project File's Output Path, since that is where NuGet.exe expects to find it.
-		# If the assembly does not exist where the Project File defines it should be (i.e. where NuGet expects it to be), copy it there, 
+		# If the assembly does not exist where the Project File defines it should be (i.e. where NuGet expects it to be), copy it there,
 		# OR the assembly exists in both places, but If the one in the Output Directory is newer, overwrite the one in the Project Output Directory.
-		if (!(Test-Path $nuGetExpectedAssemblyPath -PathType Leaf) -or 
+		if (!(Test-Path $nuGetExpectedAssemblyPath -PathType Leaf) -or
 			((Get-Item -Path $assemblyPath).LastWriteTime -lt (Get-Item -Path $nuGetExpectedAssemblyPath).LastWriteTime))
 		{
 			# If the directory to hold the assembly file does not exist, create it.
 			$nuGetExpectedAssemblyDirectoryPath = Split-Path $nuGetExpectedAssemblyPath -Parent
 			if (!(Test-Path $nuGetExpectedAssemblyDirectoryPath)) { New-Item -Path $nuGetExpectedAssemblyDirectoryPath -ItemType Container -Force > $null }
-		
+
 			# Copy the assembly file.
-			Write-Output "Copying assembly file from '$assemblyPath' to '$nuGetExpectedAssemblyPath'." 
+			Write-Output "Copying assembly file from '$assemblyPath' to '$nuGetExpectedAssemblyPath'."
 			Copy-Item -Path $assemblyPath -Destination $nuGetExpectedAssemblyPath -Force
-			
+
 			# Copy the Pdb file, if it exists.
 			$assemblyPdbPath = [System.IO.Path]::ChangeExtension($assemblyPath, "pdb")
 			$nuGetExpectedAssemblyPdbPath = [System.IO.Path]::ChangeExtension($nuGetExpectedAssemblyPath, "pdb")
 			if (Test-Path $assemblyPdbPath -PathType Leaf)
-			{ 
-				Write-Output "Copying symbols file from '$assemblyPdbPath' to '$nuGetExpectedAssemblyPdbPath'." 
+			{
+				Write-Output "Copying symbols file from '$assemblyPdbPath' to '$nuGetExpectedAssemblyPdbPath'."
 				Copy-Item -Path $assemblyPdbPath -Destination $nuGetExpectedAssemblyPdbPath -Force
 			}
 			else { Write-Output "No symbols file found at '$assemblyPdbPath', so it was not copied to '$nuGetExpectedAssemblyPdbPath'." }
-			
+
 			# Copy the Xml file, if it exists.
 			# The Xml file location and name are specified in the Project File, but NuGet.exe seems to ignore that and expects it to be in the same directory as the assembly,
 			# with the same name as the assembly, so just put it where NuGet.exe expects it to be.
 			$assemblyXmlPath = [System.IO.Path]::ChangeExtension($assemblyPath, "xml")
 			$nuGetExpectedAssemblyXmlPath = [System.IO.Path]::ChangeExtension($nuGetExpectedAssemblyPath, "xml")
 			if (Test-Path $assemblyXmlPath -PathType Leaf)
-			{ 
-				Write-Output "Copying documentation file from '$assemblyXmlPath' to '$nuGetExpectedAssemblyXmlPath'." 
+			{
+				Write-Output "Copying documentation file from '$assemblyXmlPath' to '$nuGetExpectedAssemblyXmlPath'."
 				Copy-Item -Path $assemblyXmlPath -Destination $nuGetExpectedAssemblyXmlPath -Force
 			}
 			else { Write-Output "No documentation file found at '$assemblyXmlPath', so it was not copied to '$nuGetExpectedAssemblyXmlPath'." }
@@ -255,19 +255,19 @@ if ($appendConfigurationAndPlatformToNuGetPackageFileName)
 		# If a file with the desired name already exists, we must delete that file first bfeore doing the rename.
 		if (Test-Path -Path $desiredNuGetPackageFilePath -PathType Leaf)
 		{ Remove-Item -Path $desiredNuGetPackageFilePath -Force }
-	
+
 		# Rename the NuGet package file name to the desired file name.
 		Rename-Item -Path $nugetPackageFilePath -NewName $desiredNuGetPackageFilePath -Force
-		
+
 		# Display that the NuGet package file was renamed.
 		Write-Output "'$nuGetPackageFilePath' was renamed to '$desiredNuGetPackageFilePath'."
 	}
 	else
 	{ Write-Warning "Could not find NuGet package at '$nugetPackageFilePath', so it was not renamed to '$desiredNuGetPackageFilePath'." }
-	
+
 	# Save the new NuGet package file path.
 	$nuGetPackageFilePath = $desiredNuGetPackageFilePath
-	
+
 	# If a Symbols NuGet package was specified to be created too, rename it as well.
 	if ($packOptions -like '*-Symbols*')
 	{
@@ -278,11 +278,11 @@ if ($appendConfigurationAndPlatformToNuGetPackageFileName)
 		# Construct the path of what the original Symbols NuGet package should be, and if it exists, rename it to the desired file name.
 		$originalSymbolsNuGetPackageFileName = "$nuGetPackageFileNameWithoutExtension.symbols$nuGetPackageFileExtension"
 		$originalSymbolsNuGetPackageFilePath = Join-Path -Path (Split-Path $nuGetPackageFilePath -Parent) -ChildPath $originalSymbolsNuGetPackageFileName
-		if (Test-Path -Path $originalSymbolsNuGetPackageFilePath -PathType Leaf) 
-		{ 
+		if (Test-Path -Path $originalSymbolsNuGetPackageFilePath -PathType Leaf)
+		{
 			# Rename the Symbols NuGet package to the desired name.
 			Rename-Item -Path $originalSymbolsNuGetPackageFilePath -NewName $desiredSymbolsNuGetPackageFilePath -Force
-			
+
 			# Display that the NuGet package file was renamed.
 			Write-Output "'$originalSymbolsNuGetPackageFilePath' was renamed to '$desiredSymbolsNuGetPackageFilePath'."
 		}
