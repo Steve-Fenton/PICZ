@@ -11,10 +11,11 @@ namespace Fenton.Picz.Engine
 {
     public class ImageResizer
     {
-        public ReplacementImage GetReplacementImage(int size, string originalUrl, Func<byte[]> getImage = null)
+        public ReplacementImage GetReplacementImage(int size, string originalUrl, string hash, Func<byte[]> getImage = null)
         {
             // Configuration values
             var options = PiczOptions.Load();
+            bool hasHash = !string.IsNullOrWhiteSpace(hash);
 
             size = ConstrainSize(size, options);
 
@@ -24,9 +25,20 @@ namespace Fenton.Picz.Engine
             ReplacementImage replacement = GetSafeNamedImage(originalUrl, cacheFolderPath);
 
             var fileInfo = new FileInfo(replacement.Path);
-            if (fileInfo.Exists && (fileInfo.LastWriteTimeUtc.AddHours(options.CacheDurationHours) > DateTime.UtcNow))
+
+            if (fileInfo.Exists)
             {
-                return replacement;
+                if (hasHash)
+                {
+                    // Ignore time if the hashed file is available
+                    return replacement;
+                }
+
+                if (fileInfo.LastWriteTimeUtc.AddHours(options.CacheDurationHours) > DateTime.UtcNow)
+                {
+                    // If no hash is supplied, check the file is new enough to use
+                    return replacement;
+                }
             }
 
             // Create image
@@ -60,8 +72,7 @@ namespace Fenton.Picz.Engine
 
         private static ReplacementImage GetSafeNamedImage(string originalUrl, string cacheFolderPath)
         {
-            var invalids = Path.GetInvalidFileNameChars();
-            var name = string.Join("__", originalUrl.Split(invalids, StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+            string name = RemoveInvalidCharacters(originalUrl);
 
             var fullPath = Path.Combine(cacheFolderPath, name);
 
@@ -72,6 +83,13 @@ namespace Fenton.Picz.Engine
             };
 
             return replacementImage;
+        }
+
+        private static string RemoveInvalidCharacters(string unsafeString)
+        {
+            var invalids = Path.GetInvalidFileNameChars();
+            var safeString = string.Join("__", unsafeString.Split(invalids, StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+            return safeString;
         }
 
         private void Resize(int width, ReplacementImage replacement, string originalPath)

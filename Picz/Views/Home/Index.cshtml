@@ -78,3 +78,12 @@
 <div id="picz-002" style="background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
     &nbsp;
 </div>
+
+<h3>Example (img using hash)</h3>
+@Html.PiczAppend(Url.Action("Index", "Image", new { }), "100vw", new { alt = "Paris" }, "example-1")
+
+<h3>Example (background using hash)</h3>
+@Html.PiczBackgroundAppend(Url.Action("Index", "Image", new { }), "picz-003", "example-1")
+<div id="picz-003" style="background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
+    &nbsp;
+</div>

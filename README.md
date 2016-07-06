@@ -38,7 +38,7 @@ Grab the engine from NuGet:
 
     PM> Install-Package Fenton.Picz
 
-Add the following configuration (example shows 48 hour caching, in a directory on the E drive).
+Add the following configuration (example shows 48 hour caching, in a directory on the E drive, cache duration is ignored if you supply image hashes).
 
     <add key="PiczCacheDurationHours" value="48" />
     <add key="PiczCachePath" value="E:\Temp\ImageCache\" />
@@ -53,11 +53,11 @@ Add a three line controller action to handle the image requests:
     {
         private readonly ImageResizer _imageResizer = new ImageResizer();
 
-        [Route("Picz")]
-        public ActionResult Picz(int s, string p)
+        [Route("picz")]
+        public ActionResult Picz(int s, string p, string h = "")
         {
             var originalUrl = new Uri(Request.Url, p).AbsoluteUri;
-            var replacement = _imageResizer.GetReplacementImage(s, originalUrl);
+            var replacement = _imageResizer.GetReplacementImage(s, originalUrl, h);
             return File(replacement.Path, replacement.MimeType);
         }
     }

@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiskInformation.cs" />
+    <Compile Include="HtmlHelpers\BaseHelper.cs" />
     <Compile Include="ImageResizer.cs" />
     <Compile Include="HtmlHelpers\PiczBackgroundHelper.cs" />
     <Compile Include="HtmlHelpers\PiczHelper.cs" />
