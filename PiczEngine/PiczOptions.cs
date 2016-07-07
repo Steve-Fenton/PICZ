@@ -10,6 +10,8 @@ namespace Fenton.Picz.Engine
 
         public IList<int> Sizes { get; set; }
 
+        public int Quality { get; set; }
+
         public int CacheDurationHours { get; set; }
 
         public string CacheRootPath { get; set; }
@@ -25,6 +27,7 @@ namespace Fenton.Picz.Engine
                 Sizes = new List<int> { 4000, 2500, 1024, 640, 320 },
                 BackgroundAdjustmentPercent = 10,
                 CacheDurationHours = 48,
+                Quality = 90
             };
 
             // Mandatory Config
@@ -53,6 +56,12 @@ namespace Fenton.Picz.Engine
             if (!string.IsNullOrWhiteSpace(configDuration))
             {
                 options.CacheDurationHours = int.Parse(configDuration);
+            }
+
+            var configQuality = Config("PiczQuality");
+            if (!string.IsNullOrWhiteSpace(configQuality))
+            {
+                options.Quality = int.Parse(configQuality);
             }
 
             return options;

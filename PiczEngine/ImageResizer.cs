@@ -46,11 +46,11 @@ namespace Fenton.Picz.Engine
 
             if (getImage == null)
             {
-                Resize(size, replacement, originalUrl);
+                Resize(size, replacement, originalUrl, options);
             }
             else
             {
-                Resize(size, replacement, getImage());
+                Resize(size, replacement, getImage(), options);
             }
 
             return replacement;
@@ -92,7 +92,7 @@ namespace Fenton.Picz.Engine
             return safeString;
         }
 
-        private void Resize(int width, ReplacementImage replacement, string originalPath)
+        private void Resize(int width, ReplacementImage replacement, string originalPath, PiczOptions options)
         {
             byte[] photoBytes;
             using (var webClient = new WebClient())
@@ -100,10 +100,10 @@ namespace Fenton.Picz.Engine
                 photoBytes = webClient.DownloadData(originalPath);
             }
 
-            Resize(width, replacement, photoBytes);
+            Resize(width, replacement, photoBytes, options);
         }
 
-        private void Resize(int width, ReplacementImage replacement, byte[] photoBytes)
+        private void Resize(int width, ReplacementImage replacement, byte[] photoBytes, PiczOptions options)
         {
             using (var inStream = new MemoryStream(photoBytes))
             using (var fileStream = new FileStream(replacement.Path, FileMode.Create, FileAccess.Write))
@@ -126,23 +126,24 @@ namespace Fenton.Picz.Engine
                 imageFactory
                     .Load(inStream)
                     .Resize(size)
-                    .Format(GetFormat(replacement))
+                    .Format(GetFormat(replacement, options))
+                    .Quality(options.Quality)
                     .Save(fileStream);
             }
         }
 
-        private static ISupportedImageFormat GetFormat(ReplacementImage replacement)
+        private static ISupportedImageFormat GetFormat(ReplacementImage replacement, PiczOptions options)
         {
             switch (replacement.MimeType)
             {
                 case "image/png":
-                    return new PngFormat { Quality = 90 };
+                    return new PngFormat { Quality = options.Quality };
 
                 case "image/gif":
-                    return new GifFormat { Quality = 90 };
+                    return new GifFormat { Quality = options.Quality };
 
                 default:
-                    return new JpegFormat { Quality = 90 };
+                    return new JpegFormat { Quality = options.Quality };
             }
         }
     }
