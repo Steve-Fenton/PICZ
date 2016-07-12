@@ -22,6 +22,11 @@ namespace Fenton.Picz.Engine
             // Create a cache folder that includes the image size
             var cacheFolderPath = Path.Combine(options.CacheRootPath, size.ToString());
 
+            if (hasHash)
+            {
+                cacheFolderPath = Path.Combine(cacheFolderPath, "hashvalidated");
+            }
+
             ReplacementImage replacement = GetSafeNamedImage(originalUrl, cacheFolderPath);
 
             var fileInfo = new FileInfo(replacement.Path);
