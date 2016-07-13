@@ -27,7 +27,7 @@ namespace Fenton.Picz.Engine
                 cacheFolderPath = Path.Combine(cacheFolderPath, "hashvalidated");
             }
 
-            ReplacementImage replacement = GetSafeNamedImage(originalUrl, cacheFolderPath);
+            ReplacementImage replacement = GetSafeNamedImage(hash, originalUrl, cacheFolderPath);
 
             var fileInfo = new FileInfo(replacement.Path);
 
@@ -75,9 +75,9 @@ namespace Fenton.Picz.Engine
             return size;
         }
 
-        private static ReplacementImage GetSafeNamedImage(string originalUrl, string cacheFolderPath)
+        private static ReplacementImage GetSafeNamedImage(string hash, string originalUrl, string cacheFolderPath)
         {
-            string name = RemoveInvalidCharacters(originalUrl);
+            string name = RemoveInvalidCharacters(hash) + "_" + RemoveInvalidCharacters(originalUrl);
 
             var fullPath = Path.Combine(cacheFolderPath, name);
 
