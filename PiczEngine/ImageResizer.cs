@@ -11,7 +11,7 @@ namespace Fenton.Picz.Engine
 {
     public class ImageResizer
     {
-        public ReplacementImage GetReplacementImage(int size, string originalUrl, string hash, Func<byte[]> getImage = null)
+        public ReplacementImage GetReplacementImage(int size, string originalUrl, string hash, Func<byte[]> getImage = null, Func<string> checkHash = null)
         {
             // Configuration values
             var options = PiczOptions.Load();
@@ -22,27 +22,50 @@ namespace Fenton.Picz.Engine
             // Create a cache folder that includes the image size
             var cacheFolderPath = Path.Combine(options.CacheRootPath, size.ToString());
 
+            ReplacementImage replacement = null;
+
             if (hasHash)
             {
                 cacheFolderPath = Path.Combine(cacheFolderPath, "hashvalidated");
-            }
 
-            ReplacementImage replacement = GetSafeNamedImage(hash, originalUrl, cacheFolderPath);
+                replacement = GetSafeNamedImage(hash, originalUrl, cacheFolderPath);
 
-            var fileInfo = new FileInfo(replacement.Path);
+                var fileInfo = new FileInfo(replacement.Path);
 
-            if (fileInfo.Exists)
-            {
-                if (hasHash)
+                // Cache Miss - chance the hash has been fiddled so double check it if a validator is supplied
+                if (!fileInfo.Exists && checkHash != null)
                 {
-                    // Ignore time if the hashed file is available
-                    return replacement;
+                    var checkedHash = checkHash();
+
+                    if (checkedHash != hash)
+                    {
+                        // Ah - the hash is not right, so let's try again with the correct one
+                        // this stops us from creating lots of copies of the same image every time
+                        // a robot sends a different hash
+                        hash = checkedHash;
+                        replacement = GetSafeNamedImage(hash, originalUrl, cacheFolderPath);
+                        fileInfo = new FileInfo(replacement.Path);
+                    }
                 }
 
-                if (fileInfo.LastWriteTimeUtc.AddHours(options.CacheDurationHours) > DateTime.UtcNow)
+                if (fileInfo.Exists)
                 {
-                    // If no hash is supplied, check the file is new enough to use
                     return replacement;
+                }
+            }
+            else
+            {
+                replacement = GetSafeNamedImage(hash, originalUrl, cacheFolderPath);
+
+                var fileInfo = new FileInfo(replacement.Path);
+
+                if (fileInfo.Exists)
+                {
+                    if (fileInfo.LastWriteTimeUtc.AddHours(options.CacheDurationHours) > DateTime.UtcNow)
+                    {
+                        // If no hash is supplied, check the file is new enough to use
+                        return replacement;
+                    }
                 }
             }
 

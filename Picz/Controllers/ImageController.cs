@@ -1,4 +1,5 @@
 ﻿using Fenton.Picz.Engine;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace Picz.Controllers
@@ -16,10 +17,11 @@ namespace Picz.Controllers
             }
 
             var replacementImage = _imageResizer.GetReplacementImage(
-                s.Value,
-                Request.Url.AbsoluteUri + ".jpg",
-                h,
-                () => System.IO.File.ReadAllBytes(Server.MapPath(Url.Content("~/Content/paris.jpg"))));
+                size: s.Value,
+                originalUrl: Request.Url.AbsoluteUri.Split('?').FirstOrDefault() + ".jpg",
+                hash: h,
+                getImage: () => System.IO.File.ReadAllBytes(Server.MapPath(Url.Content("~/Content/paris.jpg"))),
+                checkHash: () => "example-1");
 
             return File(replacementImage.Path, replacementImage.MimeType);
         }
