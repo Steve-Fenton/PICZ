@@ -15,7 +15,7 @@ namespace Fenton.Picz.Engine
         {
             // Configuration values
             var options = PiczOptions.Load();
-            bool hasHash = !string.IsNullOrWhiteSpace(hash);
+            bool hasHash = HasHashCode(hash);
 
             size = ConstrainSize(size, options);
 
@@ -82,6 +82,11 @@ namespace Fenton.Picz.Engine
             }
 
             return replacement;
+        }
+
+        private static bool HasHashCode(string hash)
+        {
+            return (!string.IsNullOrWhiteSpace(hash) && hash.Length > 1);
         }
 
         private static int ConstrainSize(int size, PiczOptions options)
