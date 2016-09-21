@@ -120,6 +120,11 @@ namespace Fenton.Picz.Engine
 
         private static string RemoveInvalidCharacters(string unsafeString)
         {
+            if (string.IsNullOrWhiteSpace(unsafeString))
+            {
+                return string.Empty;
+            }
+
             var invalids = Path.GetInvalidFileNameChars();
             var safeString = string.Join("__", unsafeString.Split(invalids, StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
             return safeString;
