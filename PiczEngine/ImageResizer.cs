@@ -15,7 +15,7 @@ namespace Fenton.Picz.Engine
         {
             // Configuration values
             var options = PiczOptions.Load();
-            bool hasHash = HasHashCode(hash);
+            var hasHash = HasHashCode(hash);
 
             size = ConstrainSize(size, options);
 
@@ -167,6 +167,9 @@ namespace Fenton.Picz.Engine
                     .Format(GetFormat(replacement, options))
                     .Quality(options.Quality)
                     .Save(fileStream);
+
+                fileStream.Close();
+                inStream.Close();
             }
         }
 
