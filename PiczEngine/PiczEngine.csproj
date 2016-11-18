@@ -83,6 +83,7 @@
     <Compile Include="PiczOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplacementImage.cs" />
+    <Compile Include="UrlHelpers\PiczUrlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="package.nuspec" />
