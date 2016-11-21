@@ -2,6 +2,7 @@
     <li><a href="#imagetags">Image Tags</a></li>
     <li><a href="#backgroundimages">Background Images</a></li>
     <li><a href="#controllerimages">Controller Images</a></li>
+    <li><a href="#urls">URLs</a></li>
 </ul>
 
 <h2 id="imagetags">Image Tags</h2>
@@ -87,3 +88,17 @@
 <div id="picz-003" style="background-size: cover; width: 50vw; height: 50vw; margin: 0 auto;">
     &nbsp;
 </div>
+
+<h2 id="urls">URLs</h2>
+
+<h3>Example Get URL for image (Default Largest Size)</h3>
+<pre><code>
+&#x40;Url.PiczUrl(Url.Action("Index", "Image"), "example-1")
+</code></pre>
+@Url.PiczUrl(Url.Action("Index", "Image"), "example-1")
+
+<h3>Example Get URL for image (Parameter as a size)</h3>
+<pre><code>
+&#x40;Url.PiczUrl(Url.Action("Index", "Image"), 800, "example-1")
+</code></pre>
+@Url.PiczUrl(Url.Action("Index", "Image"), 800, "example-1")
