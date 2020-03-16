@@ -55,6 +55,7 @@ namespace System.Web.Mvc.Html
             builder.Attributes.Add("src", defaultSource);
             builder.Attributes.Add("srcset", string.Join(", ", sourceSets));
             builder.Attributes.Add("sizes", sizes);
+            builder.Attributes.Add("loading", "lazy");
             return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
         }
     }
